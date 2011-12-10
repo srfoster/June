@@ -1,3 +1,4 @@
+/* See the copyright information at https://github.com/srfoster/June/blob/master/COPYRIGHT */
 using System;
 using System.Text;
 using System.Net.Sockets;
