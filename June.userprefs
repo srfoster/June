@@ -1,7 +1,8 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Vendor/June/Server/StartServer.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Dependencies/june_dependencies.txt">
     <Files>
+      <File FileName="Assets/Dependencies/june_dependencies.txt" Line="3" Column="60" />
       <File FileName="Assets/Vendor/June/Server/Server.cs" Line="1" Column="1" />
       <File FileName="Assets/Vendor/June/Server/StartServer.cs" Line="1" Column="1" />
     </Files>

@@ -1,1 +1,1 @@
-https://github.com/srfoster/YouGitIt
+https://github.com/downloads/srfoster/YouGitIt/YouGitIt.unitypackage
