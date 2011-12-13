@@ -6,7 +6,7 @@ public class Levitate
   {
     Enchanted entity = Enchant.byName(args);
 
-    entity.movement().levitate(2.0);
+    entity.movement().levitate(4.0);
     for(int i = 1; i <= 100; i++)
 	    entity.movement().forward(.03);
     for(int i = 1; i <= 100; i++)

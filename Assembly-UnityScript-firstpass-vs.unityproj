@@ -44,6 +44,8 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\ThirdPersonCamera.js" />
+     <Compile Include="Assets\Standard Assets\Character Controllers\Sources\Scripts\ThirdPersonController.js" />
      <Compile Include="Assets\Standard Assets\June\Eval\Eval.js" />
      <Compile Include="Assets\Standard Assets\Shell\Shell.js" />
      <None Include="Assets\Dependencies\yougitit_dependencies.txt" />

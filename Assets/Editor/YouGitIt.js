@@ -1,4 +1,3 @@
-/* See the copyright information at https://github.com/srfoster/YouGitIt/blob/master/COPYRIGHT */
 
 /*
 TODO: Make it actually fetch the correct file.
@@ -55,11 +54,11 @@ class YouGitIt extends EditorWindow {
 					var to_git_path_split = to_git.Split('/'[0]);
 					var package_name = to_git_path_split[to_git_path_split.Length - 1];
 					
-			    	Debug.Log("Gitting " + to_git);
+			    	Debug.Log("Gitting " + to_git + "/blob/master/"+package_name+".unitypackage?raw=true");
 					feedback = "Gitting: " + to_git;
 		    		
 		    		var webClient = new WebClient();
-					webClient.DownloadFile(to_git, data_path + "/Vendor/YouGitIt/"+package_name+".unitypackage");
+					webClient.DownloadFile(to_git + "/blob/master/"+package_name+".unitypackage?raw=true", data_path + "/YouGotIt/"+package_name+".unitypackage");
 		    	}
 		    	
 		    	
