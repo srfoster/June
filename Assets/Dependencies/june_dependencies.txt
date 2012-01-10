@@ -1,3 +1,0 @@
-https://github.com/downloads/srfoster/YouGitIt/YouGitIt.unitypackage
-https://github.com/downloads/srfoster/UShell/UShell.unitypackage
-https://github.com/downloads/srfoster/BasicWorld/BasicWorld.unitypackage
