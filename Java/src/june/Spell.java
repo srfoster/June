@@ -4,11 +4,16 @@ import june.*;
 
 public abstract class Spell
 {
-  String target_id;
-
+    String target_id;
+    private Enchanted ench;
+    
   public Spell(){
-
+      ench = new Enchanted("Player");
   }
+    
+    public void print(String message) {
+        ench.commandGlobal("Debug.Log(\""+message+"\")");
+    }
 
   public void setTarget(String target_id)
   {
@@ -23,6 +28,8 @@ public abstract class Spell
   {
     return Enchant.byName(name);
   }
+    
+    
 
   public abstract void cast();
 }

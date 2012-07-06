@@ -1,14 +1,22 @@
 import june.*;
+import java.util.*;
+      
+      public class Levitate extends Spell
+      {
+          public void cast()
+          { 
+              Enchanted mc = getByName("Player");
+              Enchanted rock = getTarget();
+              EnchantedList list = mc.findLike(rock, 4.0); 
+              
+              
+              for (int i=0; i<list.size();i++) {
+                  list.get(i).movement().levitate(5.0, 0.2);
+                  print("has levitated object");
+              }            
+              
+              
+          }
+      }
 
-public class Levitate extends Spell
-{
-  //Test
-  public void cast()
-  {
-    Enchanted target = getTarget();
-    Enchanted fountain = getByName("Fountain");
 
-    fountain.movement().levitate(10f,20f);
-    target.movement().levitate(10f,20f);
-  }
-}
