@@ -45,7 +45,7 @@ public abstract class Direction implements Vector3
     }
 
     public static Direction forward() {
-        String vector3_string = "objects['Me'].transform.forward";
+        String vector3_string = "objects['Me'].transform.FindChild('Main Camera').transform.forward";
         Direction dir = new LazyDirection(vector3_string);
             
         return dir;
@@ -61,16 +61,25 @@ public abstract class Direction implements Vector3
     public static Direction none() {
         return new LazyDirection(0,0,0);
     }
+    
+    
+    public static Direction between(Location source, Location target) {
+        String vector3_string = "("+target.toString()+"-"+source.toString()+").normalized";
+        Direction dir = new LazyDirection(vector3_string);
+        return dir;
+    }
+
 
     public static Direction between(Enchanted source, Enchanted target)
     {
-       String vector3_string = "(objects['"+target.getId()+"'].transform.position - objects['"+source.getId()+"'].transform.position).normalized";
+       String vector3_string = "("+target.getLocation()+"-"+source.getLocation()+").normalized";
             
        Direction dir = new LazyDirection(vector3_string);
 
        return dir;
     }
 
-    public abstract void add(Vector3 v);
-    public abstract void times(double d);
+    public abstract Vector3 add(Vector3 v);
+    public abstract Vector3 times(double d);
+    public abstract void freeze();
 }

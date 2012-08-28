@@ -1,29 +1,26 @@
 package june;
 
-import java.util.ArrayList;
+import java.util.*;
 
-public class EnchantedList extends Enchanted 
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+
+
+public class EnchantedList implements Iterable<Enchanted>
 {
     //list of enchanted objects
     //add method
     private ArrayList<Enchanted> eList;
     private boolean setEmptyPos;
+
+    PrintWriter out;
+    BufferedReader in;
     
     public EnchantedList() {
-        //creates empty gameobject, and names it.
-        super("");
-        super.setId(""+this.hashCode());
-        super.commandGlobal("empty = new GameObject(); empty = util.instantiate (empty, Vector3(0,0,0), Quaternion.identity); empty.layer=2; objects.Add(\""+super.getId()+"\", empty); ");
+        out = UnityConnection.getOutgoingWriter();
+        in  = UnityConnection.getIncomingReader();
+
         eList = new ArrayList<Enchanted>();
-        setEmptyPos = false;
-    }
-
-    public EnchantedList(String id)
-    {
-       super(id);
-
-       String list = commandGlobal("util.getObjWith(\""+this.getId()+"\",\""+ench.getId()+"\","+rad+")");
-       addAllFromUnityString(list);
     }
 
     public void addAllFromUnityString(String list)
@@ -37,15 +34,19 @@ public class EnchantedList extends Enchanted
     }
     
     public void add(Enchanted ench) {
-        //gets parent game object
-        if (!setEmptyPos) {
-            super.commandGlobal("objects[\""+super.getId()+"\"].transform.position = objects[\""+ench.getId()+"\"].transform.position");
-            setEmptyPos = true;
-        }
-        super.commandGlobal("objects[\""+ench.getId()+"\"].transform.parent = objects[\""+super.getId()+"\"].transform");
         eList.add(ench);
     }
     
+    public void remove(Enchanted ench) {
+        int index = 0;
+        for (Enchanted e : eList) {
+            if ((e.getId()).equals(ench.getId())) {
+                eList.remove(index);
+                Log.log("I have just removed object with Id: "+ench.getId());
+            }
+            index++;
+        }
+    }
     
     public Enchanted get(int index)
     {
@@ -56,4 +57,60 @@ public class EnchantedList extends Enchanted
     {
       return eList.size();
     }
+
+    public Iterator<Enchanted> iterator()
+    {
+      return eList.iterator();
+    }
+
+    //The API
+    
+    public void onFire(boolean bool)
+    {
+       String big_command = "";
+
+       for(Enchanted e : eList)
+       {
+          big_command += e.onFireCommand(bool) + ";";
+       }
+
+       Enchanted.executeCommand(big_command);
+    }
+
+    public void move(Direction dir, double speed)
+    {
+       String big_command = "";
+
+       for(Enchanted e : eList)
+       {
+          big_command += e.moveCommand(dir, speed) + ";";
+       }
+
+       Enchanted.executeCommand(big_command);
+    }
+
+    public void grow(double amount)
+    {
+       String big_command = "";
+
+       for(Enchanted e : eList)
+       {
+          big_command += e.growCommand(amount) + ";";
+       }
+
+       Enchanted.executeCommand(big_command);
+    }
+
+    public void setLocation(Location loc)
+    {
+       String big_command = "";
+
+       for(Enchanted e : eList)
+       {
+          big_command += e.setLocationCommand(loc) + ";";
+       }
+
+       Enchanted.executeCommand(big_command);
+    }
+
 }

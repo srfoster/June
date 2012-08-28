@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 public class Enchanted
 {
 	private String id;
-	private Movement movement;
 
 	static PrintWriter out;
 	static BufferedReader in;
@@ -29,29 +28,40 @@ public class Enchanted
 		return id;
 	}
     
-  public void setId(String temp)
+  protected void setId(String temp)
 	{
 		id = temp;
 	}	
 
-	public Movement movement()
-	{
-		if(movement == null)
-			movement = new Movement(this);		
+  public void setName(String new_name)
+  {
+    //executeCommand("util.reregister(\""+id+"\",\""+new_name+"\");");
+    //
+    String command = "$target.GetComponent('Enchantable').setId('"+new_name+"')";
+    command = interpolateId(command);
+    executeCommand(command); 
 
-
-		return movement;
-	}
+    setId(new_name);
+  }
     
     
-    public static String commandGlobal (String command) 
+    public static String executeCommand(String command) 
     {
+
         try {
             long before = System.currentTimeMillis();
             Log.log("Java sends to Unity: "+command+"\n");
             out.println(command);
             String response = in.readLine();
+
+            if(response.startsWith("Error"))
+            {
+
+              throw new RuntimeException("Unity Error");
+            }
+
             Log.log("Java gets back from Unity: "+response);
+
             
             long after = System.currentTimeMillis();
             
@@ -59,44 +69,25 @@ public class Enchanted
         }
         catch(Exception e) {
             e.printStackTrace();
+
             Log.log("Error in command: " + e);
 
+            System.exit(1);
         }
         return null;
     }
 
-	public String command(String command)
+	private String interpolateId(String command)
 	{
-		try{
-
-			long before = System.currentTimeMillis();
-
-			String new_command = "";
+      String new_command = "";
 			if(command.indexOf("$target") > -1)
 			{
 			 	new_command = command.replaceAll("\\$target","objects[\""+id+"\"]");
 			} else {
 				new_command = "objects[\""+id+"\"]."+command+";";
 			}
-      Log.log("Java about to block, sending to Unity: "+new_command);
-			out.println(new_command);
-      Log.log("Java sent to Unity");
 
-
-      Log.log("Java about to block, reading from Unity");
-			String response = in.readLine(); //Waits for confirmation from the Unity server...
-            
-			long after = System.currentTimeMillis();
-      Log.log("Java gets back from Unity (in "+(after-before)+" ms): "+response);
-
-
-			return response;
-		}catch(Exception e){
-			e.printStackTrace();
-      Log.log("Error in command: " + e);
-		}
-
-		return null;
+      return new_command;
 	}
 
 
@@ -115,51 +106,162 @@ public class Enchanted
        return loc; 
     }
 
-    public void adjustLocation(Vector3 loc){
+    public void move(Direction dir, double speed)
+    {
+      executeCommand(moveCommand(dir,speed));
+    }
+    
+    public String moveCommand(Direction dir, double speed)
+    {
+      Vector3 new_dir = dir.times(speed);
+
+      return adjustLocationCommand(new_dir);
+    }
+
+    public void adjustLocation(Vector3 loc)
+    {
+       executeCommand(adjustLocationCommand(loc));
+    }
+
+    public String adjustLocationCommand(Vector3 loc){
         String command = "";
         command += "$target.transform.position.x += " + loc.getXString() + ";";
         command += "$target.transform.position.y += " + loc.getYString() + ";";
         command += "$target.transform.position.z += " + loc.getZString() + ";";
 
-        command(command);
+        String c = interpolateId(command);
+        return c;
     }
 
-    public void setLocation(Location loc)
+    public String setLocationCommand(Location loc)
     {
         String command = "";
         command += "$target.transform.position.x = " + loc.getXString() + ";";
         command += "$target.transform.position.y = " + loc.getYString() + ";";
         command += "$target.transform.position.z = " + loc.getZString() + ";";
 
-        command(command);
+        String c = interpolateId(command);
+        return c;
     }
     
-    public EnchantedList findLike(Enchanted ench, double rad) {
-        String list = commandGlobal("util.getObjWith(\""+this.getId()+"\",\""+ench.getId()+"\","+rad+")");
+    public void setLocation(Location loc)
+    {
+        executeCommand(setLocationCommand(loc));
+    }
+
+    public EnchantedList findWithin()
+    {
+        String list = executeCommand("util.getWithin(\""+this.getId()+"\")");
         EnchantedList eList = new EnchantedList();
         eList.addAllFromUnityString(list);
         return eList;
     }
     
-  public void move(Direction dir, double speed)
-  {
-    dir.times(speed);
+    /*
+     GameObject sample_crate_prefab = Resources.Load("sample_crate") as GameObject;
+     
+     Network.Instantiate(sample_crate_prefab, transform.position,
+     Quaternion.identity, 0);
+     
+     */
+    
+    public boolean isRock() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+1+")"));
+    }
+    
+    public boolean isPlant() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+2+")"));
+        
+    }
+    
+    public boolean isSeed() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+3+")"));
+    }
+    
+    public boolean isRockSugar() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+4+")"));
+    }
+    
+    public boolean isFlour() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+5+")"));
+    }
+    
+    public boolean isBread() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+6+")"));
+    }
+    /*
+     public boolean isFlag() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+7+")"));
+     
+     }
+     */
+    
+    public boolean isIgnited() {
+        return Boolean.parseBoolean(executeCommand("util.isOfType(\""+this.getId()+"\","+7+")"));
+    }
 
-    adjustLocation(dir);
+    public String growCommand(double amount) {
+        String c = interpolateId("$target.transform.localScale = $target.transform.localScale + (new Vector3("+amount+","+amount+","+amount+"))");
+        return c;
+    }
+
+    public void grow(double amount)
+    {
+        String temp = growCommand(amount);
+        //Log.log("To be sent to executeCommand: "+temp);
+        executeCommand(temp);
+      //executeCommand(growCommand(amount));
+    }
+
+    public double distanceTo(Enchanted ench) {
+        String c = interpolateId("Vector3.Distance($target.transform.position , objects[\""+ench.getId()+"\"].transform.position)");
+        String resp = executeCommand(c);
+        return Double.parseDouble(resp);
+    }
+    
+  public double sizeX()
+  {
+      String response = executeCommand("util.size('"+getId()+"')");
+
+      double ret = Double.parseDouble(response.split(",")[0]);
+
+      return ret;
   }
 
-	public double currentHeight()
-	{
-		return Double.parseDouble(command("$target.transform.position.y - Terrain.activeTerrain.SampleHeight($target.transform.position)"));
-	}
+  public double sizeY()
+  {
+      String response = executeCommand("util.size('"+getId()+"')");
+
+      double ret = Double.parseDouble(response.split(",")[1]);
+
+      return ret;
+  }
+
+  public double sizeZ()
+  {
+      String response = executeCommand("util.size('"+getId()+"')");
+
+      double ret = Double.parseDouble(response.split(",")[2]);
+
+      return ret;
+  }
+
+  public String onFireCommand(boolean bool)
+  {
+    String c = "";
+    if(bool)
+    {
+      c = interpolateId("GetComponent('Flamable').Ignite()");
+    } else {
+      c = interpolateId("GetComponent('Flamable').Extinguish()");
+    }
+
+    return c;
+  }
 
   public void onFire(boolean bool)
   {
-    if(bool)
-    {
-      command("GetComponent('Flamable').Ignite()");
-    } else {
-      command("GetComponent('Flamable').Extinguish()");
-    }
+    String c = onFireCommand(bool);
+    executeCommand(c);
   }
 }
